@@ -1,0 +1,37 @@
+\import Data.Bool
+\import Data.List
+\open Nat
+
+\func if {A : \Type} (b : Bool) (t f : A) : A \elim b
+  | true => t
+  | false => f
+
+\func or (l r : Bool) : Bool => if l l (if r r false)
+
+\func \infixr 8 ^ (b exp : Nat) =>  ^' 1 b exp
+  \where
+    \func ^' (acc b exp : Nat) : Nat \elim exp
+      | 0 => acc
+      | (suc n) => ^' (acc * b) b n
+
+\func fac (x : Nat) : Nat
+  | 0 => 1
+  | (suc n) => (suc n) * fac n
+
+\func map {A B : \Type} (_ : A -> B) (_ : List A) : List B
+  | _, nil => nil
+  | f, (:: a as) => (f a) :: map f as
+
+\func binaryModusPonens {P Q R : \Type} (pqr : P -> Q -> R) (pq : P -> Q) (p : P) : R => pqr p (pq p)
+
+\func curry {P Q R : \Type} (f : \Sigma P Q -> R) (p : P) (q : Q) : R => f (p, q)
+\func uncurry {P Q R : \Type} (f : P -> Q -> R) (pq : \Sigma P Q) : R => f pq.1 pq.2
+
+\data \infixr 2 || (P Q : \Type)
+  | inl P
+  | inr Q
+
+\func ||-elim {P Q R : \Type} (l : P -> R) (r : Q -> R) (e : P || Q) : R \elim e
+  | inl p => l p
+  | inr q => r q
+
