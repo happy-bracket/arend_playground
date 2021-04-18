@@ -11,7 +11,7 @@
   | true => t
   | false => f
 
-\func or (l r : Bool) : Bool => if l l (if r r false)
+\func or' (l r : Bool) : Bool => if l l (if r r false)
 
 \func \infixr 8 ^ (b exp : Nat) =>  ^' 1 b exp
   \where
@@ -52,3 +52,17 @@
   (fa : \Pi (x : Nat) -> (P x -> Q x))
   (e : \Sigma (x : Nat) (P x))
   : \Sigma (x : Nat) (Q x) => (e.1, (fa e.1) e.2)
+
+\func and-isAssociative (x y z : Bool) : (x and y) and z = x and (y and z)
+  | false, _, _ => idp
+  | true, false, _ => idp
+  | true, true, false => idp
+  | true, true, true => idp
+
+\func or-isAssociative (x y z : Bool) : (x or y) or z = x or (y or z)
+  | true, _, _ => idp
+  | false, true, _ => idp
+  | false, false, true => idp
+  | false, false, false => idp
+
+\func twoTimesTwoIsFour : 2 * 2 = 4 => idp
