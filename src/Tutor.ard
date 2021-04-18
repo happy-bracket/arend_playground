@@ -1,6 +1,11 @@
 \import Data.Bool
 \import Data.List
+\import Logic
 \open Nat
+
+\data MyNat
+  | z
+  | s MyNat
 
 \func if {A : \Type} (b : Bool) (t f : A) : A \elim b
   | true => t
@@ -22,7 +27,6 @@
   | _, nil => nil
   | f, (:: a as) => (f a) :: map f as
 
-\func binaryModusPonens {P Q R : \Type} (pqr : P -> Q -> R) (pq : P -> Q) (p : P) : R => pqr p (pq p)
 
 \func curry {P Q R : \Type} (f : \Sigma P Q -> R) (p : P) (q : Q) : R => f (p, q)
 \func uncurry {P Q R : \Type} (f : P -> Q -> R) (pq : \Sigma P Q) : R => f pq.1 pq.2
@@ -35,3 +39,16 @@
   | inl p => l p
   | inr q => r q
 
+\func binaryModusPonens {P Q R : \Type} (pqr : P -> Q -> R) (pq : P -> Q) (p : P) : R => pqr p (pq p)
+
+\func pqrp=>pr=>r {P Q R : \Type} (pqrp : (P -> Q -> R) -> P) (pr : P -> R) : R => pr (pqrp (\lam p _ => pr p))
+
+\func forallA_Pa=>EA_Pa {A : \Type} {P : A -> \Type} (a : A) (fa : \Pi (x : A) -> P x) : \Sigma (x : A) (P x) => (a, fa a)
+
+\func forallNat_NotPn=>P3_Empty {P : Nat -> \Type} (fa : \Pi (x : Nat) -> Not (P x)) : Not (P 3) => fa 3
+
+\func Px->Qx&ENat_Px=>ENat_Qx
+  {P Q : Nat -> \Type}
+  (fa : \Pi (x : Nat) -> (P x -> Q x))
+  (e : \Sigma (x : Nat) (P x))
+  : \Sigma (x : Nat) (Q x) => (e.1, (fa e.1) e.2)
