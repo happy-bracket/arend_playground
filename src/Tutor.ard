@@ -7,13 +7,20 @@
   | z
   | s MyNat
 
+\data Unit | unit
+\data Empty
+
+\func T (b : Bool) : \Type
+  | true => Unit
+  | false => Empty
+
 \func if {A : \Type} (b : Bool) (t f : A) : A \elim b
   | true => t
   | false => f
 
 \func or' (l r : Bool) : Bool => if l l (if r r false)
 
-\func \infixr 8 ^ (b exp : Nat) =>  ^' 1 b exp
+\func \infixr 8 ^ (b exp : Nat) => ^' 1 b exp
   \where
     \func ^' (acc b exp : Nat) : Nat \elim exp
       | 0 => acc
@@ -27,8 +34,8 @@
   | _, nil => nil
   | f, (:: a as) => (f a) :: map f as
 
-
 \func curry {P Q R : \Type} (f : \Sigma P Q -> R) (p : P) (q : Q) : R => f (p, q)
+
 \func uncurry {P Q R : \Type} (f : P -> Q -> R) (pq : \Sigma P Q) : R => f pq.1 pq.2
 
 \data \infixr 2 || (P Q : \Type)
@@ -66,3 +73,46 @@
   | false, false, false => idp
 
 \func twoTimesTwoIsFour : 2 * 2 = 4 => idp
+
+\module ListOps \where {
+
+  \func length {A : \Type} (xs : List A) : Nat
+    | nil => 0
+    | :: _ xs => 1 + length xs
+
+}
+
+\func \infix 4 < (x y : Nat) : Bool
+  | 0, 0 => false
+  | 0, suc y => true
+  | suc x, 0 => false
+  | suc x, suc y => x < y
+
+\func lookup {A : \Type} (xs : List A) (ix : Nat) (ixIsInRange : T (ix < ListOps.length xs)) : A \elim xs, ix {
+  | :: a _, 0 => a
+  | :: a xs, suc ix => lookup xs ix ixIsInRange
+  | nil, ix => {?}
+}
+
+\data Vect (n : Nat) (A : \Type) \elim n
+  | 0 => fnil
+  | suc n => fcons A (Vect n A)
+
+\module VectOps \where {
+
+  \func head {A : \Type} {n : Nat} (v : Vect (suc n) A) : A
+    | fcons x _ => x
+
+  \func tail {A : \Type} {n : Nat} (v : Vect (suc n) A) : Vect n A
+    | fcons _ t => t
+
+  \func replicate {A : \Type} (n : Nat) (a : A) : Vect n A \elim n
+    | 0 => fnil
+    | suc n => fcons a (replicate n a)
+
+  \func map {A B : \Type} {n : Nat} (f : A -> B) (v : Vect n A) : Vect n B \elim n, v
+    | 0, fnil => fnil
+    | suc n, fcons a v => fcons (f a) (map f v)
+
+}
+
